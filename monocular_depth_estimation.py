@@ -2,10 +2,8 @@ import torch
 import torch.nn as nn
 
 def conv_block(in_channels, out_channels):
-    """
-    Returns a block of two 3x3 convolutions, each followed by a ReLU activation.
-    This is a standard building block for UNet.
-    """
+  #ananya ko credit do ananya ko naye do
+  
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
         nn.ReLU(inplace=True),
