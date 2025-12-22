@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Sees: Depth Estimation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #000; /* Black background */
+        }
+        
+        /* Flashing letters intro animation */
+        @keyframes letterFlash {
+            0%, 100% { opacity: 0; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        .letter-flash {
+            opacity: 0;
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* extrabold */
+            color: white;
+            animation: letterFlash 0.5s ease-in-out forwards;
+            line-height: 1; /* Ensure letters align well */
+        }
+
+        /* Fade-in animation (for hero content and sections) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        /* Fade-in on scroll animation */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Simple loading spinner */
+        .loader {
+            border: 4px solid #374151; /* gray-700 */
+            border-top: 4px solid #3b82f6; /* blue-500 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Pulsing animation for the upload button */
+        .pulse-button {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .8;
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-300">
+
+    <!-- Header / Navbar -->
+    <header class="bg-black text-white shadow-lg sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold">Simon Sees</h1>
+            <div class="flex flex-row items-center space-x-4">
+                <a href="#challenge" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition duration-300">Challenge</a>
+                <a href="#solution" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition duration-300">Solution</a>
+                <a href="#applications" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition duration-300">Applications</a>
+                <a href="#demo" class="px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition duration-300 font-semibold">Live Demo</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero / Intro Section -->
+    <section id="hero" class="min-h-screen flex flex-col justify-center items-center text-center bg-black text-white relative px-6 overflow-hidden">
+        <!-- Flashing Letters -->
+        <div id="flashing-letters" class="flex space-x-2 md:space-x-3 mb-8">
+            <span class="letter-flash" style="animation-delay: 0.5s">S</span>
+            <span class="letter-flash" style="animation-delay: 0.7s">I</span>
+            <span class="letter-flash" style="animation-delay: 0.9s">M</span>
+            <span class="letter-flash" style="animation-delay: 1.1s">O</span>
+            <span class="letter-flash" style="animation-delay: 1.3s">N</span>
+            <span class="letter-flash w-3" style="animation-delay: 1.5s">&nbsp;</span>
+            <span class="letter-flash" style="animation-delay: 1.7s">S</span>
+            <span class="letter-flash" style="animation-delay: 1.9s">E</span>
+            <span class="letter-flash" style="animation-delay: 2.1s">E</span>
+            <span class="letter-flash" style="animation-delay: 2.3s">S</span>
+        </div>
+
+        <!-- Main Hero Content (fades in after) -->
+        <div id="hero-content" class="opacity-0">
+            <h2 class="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                See the World in
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">3D Depth</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10">
+                This project uses a state-of-the-art AI model to generate a 3D depth map from any single 2D image.
+            </p>
+            <a href="#demo" class="px-8 py-4 bg-white text-black text-lg font-bold rounded-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105">
+                Try the Live Demo
+            </a>
+        </div>
+        
+        <!-- Scroll Down Indicator (fades in) -->
+        <div id="scroll-indicator" class="opacity-0 absolute bottom-10 animate-bounce">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12 md:py-20">
+
+        <!-- Section: The Challenge -->
+        <section id="challenge" class="mb-24 fade-in-section">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">The Challenge: Seeing in 3D</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-800">
+                    <h4 class="text-2xl font-semibold mb-3 text-white">The Problem with 2D</h4>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        A standard photograph is flat. It contains no information about the distance of objects. Our brains can *infer* depth from cues like shadows, perspective, and object size, but for a computer, it's just a grid of colored pixels.
+                    </p>
+                    <br>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        The challenge is to create an algorithm that can look at a single 2D image and predict the real-world 3D distance for every single pixel.
+                    </p>
+                </div>
+                <!-- Simple graphic -->
+                <div class="flex items-center justify-center space-x-4 p-8">
+                    <!-- 2D Icon -->
+                    <svg class="w-24 h-24 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h18v-3.75h-18v3.75z" /></svg>
+                    <!-- Arrow -->
+                    <svg class="w-16 h-16 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    <!-- 3D Icon -->
+                    <svg class="w-24 h-24 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25L3 7.5m18 0v9l-9 5.25L3 16.5v-9m9 5.25l9-5.25M3 7.5l9 5.25m0 0l-9 5.25m9-5.25v9l-9 5.25" /></svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: The Solution -->
+        <section id="solution" class="mb-24 fade-in-section">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">The Solution: A Custom Deep Learning Model</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <!-- Icon -->
+                <div class="flex items-center justify-center p-8">
+                    <svg class="w-48 h-48 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68v-1.007M9 17.25c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68H7.675a.675.675 0 01-.675-.68v-1.007c0-.377.303-.68.675-.68H9zm4.5 0v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68v-1.007m-4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68v-1.007c0-.377.303-.68.675-.68h1.007zm4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68v-1.007c0-.377.303-.68.675-.68h1.007zM9 13.5v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68v-1.007m-4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68H7.675a.675.675 0 01-.675-.68v-1.007c0-.377.303-.68.675-.68H9zm4.5 0v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68v-1.007m-4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68v-1.007c0-.377.303-.68.675-.68h1.007zM9 9.75v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68V9.75m-4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68H7.675a.675.675 0 01-.675-.68V9.75c0-.377.303-.68.675-.68H9zm4.5 0v1.007c0 .377.303.68.675.68h1.007a.675.675 0 00.675-.68V9.75m-4.5 0c.377 0 .68.303.68.675v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68V9.75c0-.377.303-.68.675-.68h1.007zM9 6a.75.75 0 01.75.75v1.007c0 .377-.303.68-.675.68H7.675a.675.675 0 01-.675-.68V6.75A.75.75 0 017.5 6H9zm4.5 0a.75.75 0 01.75.75v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68V6.75A.75.75 0 0112.75 6h1.007zM15 6a.75.75 0 01.75.75v1.007c0 .377-.303.68-.675.68h-1.007a.675.675 0 01-.675-.68V6.75A.75.75 0 0114.25 6h1.007zM4.5 19.5a.75.75 0 01.75-.75h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zM4.5 19.5v.001z" /></svg>
+                </div>
+                <!-- Text Content -->
+                <div class="bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-800">
+                    <h4 class="text-2xl font-semibold mb-3 text-white">An Encoder-Decoder Architecture</h4>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        To solve this, we implemented a custom-built Convolutional Neural Network (CNN) based on the famous UNet architecture. This model is specifically designed for image-to-image tasks like depth estimation.
+                    </p>
+                    <br>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        The model works in two parts: an Encoder (down-sampling path) that "sees" the image and captures its high-level features, and a Decoder (up-sampling path) that uses this information to reconstruct a detailed, pixel-perfect depth map.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Demo Section -->
+        <section id="demo" class="mb-24 fade-in-section">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Live Demo</h3>
+            
+            <!-- Upload Area -->
+            <div class="max-w-xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-800 text-center">
+                <h4 class="text-2xl font-semibold mb-4 text-white">Try It Yourself</h4>
+                <p class="text-gray-400 mb-6">Click the button below to upload any image and see the model predict its depth map in real-time.</p>
+                
+                <input type="file" id="image-upload" class="hidden" accept="image/*">
+                
+                <label for="image-upload" class="pulse-button inline-block px-10 py-4 bg-white text-black text-lg font-bold rounded-lg cursor-pointer hover:bg-gray-200 transition duration-300 transform hover:scale-105">
+                    Select Image
+                </label>
+                
+                <p id="file-name" class="mt-4 text-gray-500"></p>
+            </div>
+
+            <!-- Results Display Area -->
+            <div class="mt-12">
+                <!-- NEW Thinking Prompt -->
+                <div id="thinking-prompt" class="text-center p-6 bg-gray-900 border border-gray-800 rounded-lg shadow-md max-w-lg mx-auto hidden">
+                    <p class="text-2xl font-semibold text-white">
+                        Simon Says the depth map for this image is... 🤔
+                    </p>
+                    <div class="loader mt-4"></div>
+                </div>
+                
+                <p id="error-message" class="text-center text-red-500 font-semibold hidden mt-4"></p>
+                
+                <div id="results-display" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 bg-gray-950 p-6 rounded-xl shadow-inner hidden border border-gray-800">
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4 text-center text-white">Original Image</h4>
+                        <img id="main-image" src="https://placehold.co/600x400/1f2937/4b5563?text=Your+Image" alt="Uploaded original image" class="w-full h-auto rounded-lg shadow-lg aspect-video object-cover">
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4 text-center text-white">Predicted Depth</h4>
+                        <img id="main-depth-map" src="https://placehold.co/600x400/1f2937/4b5563?text=Depth+Map" alt="Predicted depth map" class="w-full h-auto rounded-lg shadow-lg aspect-video object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance & Metrics Section -->
+        <section class="mb-24 fade-in-section">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Performance & Metrics</h3>
+            <p class="text-center text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+                To validate the model, we evaluated it against the entire NYUv2 test set.
+                The performance was measured using standard depth estimation metrics, where a lower score is better.
+            </p>
+            <div class="max-w-3xl mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden border border-gray-800">
+                <table class="min-w-full text-left">
+                    <thead class="bg-gray-800">
+                        <tr>
+                            <th class="px-6 py-4 text-lg font-semibold uppercase tracking-wider">Output</th>
+                            <th class="px-6 py-4 text-lg font-semibold uppercase tracking-wider">Abs Rel Error</th>
+                            <th class="px-6 py-4 text-lg font-semibold uppercase tracking-wider">RMSE (meters)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        <!-- Update these values with your exact results from evaluating.py -->
+                        <tr class="hover:bg-gray-700 transition-colors">
+                            <td class="px-6 py-4 font-bold text-lg text-blue-300">Simon</td>
+                            <td class="px-6 py-4 font-mono text-lg text-green-300">0.1682</td>
+                            <td class="px-6 py-4 font-mono text-lg text-green-300">0.5693 m</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center max-w-2xl mx-auto mt-6">
+                <p class="text-gray-400 text-lg">These results are excellent and demonstrate the usage of this model. An average relative error of 16.8% and a typical error of only 57 cm is a brilliant result.</p>
+            </div>
+        </section>
+
+        <!-- Section: Real-World Applications -->
+        <section id="applications" class="mb-20 fade-in-section">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">Real-World Applications</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Application 1: AR -->
+                <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 hover:shadow-xl hover:border-blue-500 transition-all transform hover:-translate-y-1">
+                    <h4 class="text-xl font-semibold mb-2 text-white">Augmented Reality (AR)</h4>
+                    <p class="text-gray-400">Placing virtual objects in the real world so they realistically interact with surfaces.</p>
+                </div>
+                <!-- Application 2: Robotics -->
+                <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 hover:shadow-xl hover:border-blue-500 transition-all transform hover:-translate-y-1">
+                    <h4 class="text-xl font-semibold mb-2 text-white">Robotics & Navigation</h4>
+                    <p class="text-gray-400">Helping robots understand their surroundings to avoid obstacles and navigate complex spaces.</p>
+                </div>
+                <!-- Application 3: Self-Driving Cars -->
+                <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 hover:shadow-xl hover:border-blue-500 transition-all transform hover:-translate-y-1">
+                    <h4 class="text-xl font-semibold mb-2 text-white">Autonomous Vehicles</h4>
+                    <p class="text-gray-400">Allowing self-driving cars to perceive the distance of pedestrians, and other vehicles.</p>
+                </div>
+                <!-- Application 4: Photography -->
+                <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 hover:shadow-xl hover:border-blue-500 transition-all transform hover:-translate-y-1">
+                    <h4 class="text-xl font-semibold mb-2 text-white">Computational Photography</h4>
+                    <p class="text-gray-400">Creating the 'Portrait Mode' or 'Bokeh' effect by digitally blurring the background.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: About -->
+        <section class="fade-in-section text-center max-w-3xl mx-auto bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-800">
+             <h3 class="text-3xl md:text-4xl font-bold text-center mb-6 text-white">About This Project</h3>
+             <p class="text-lg text-gray-400 leading-relaxed">
+                This project was created by Vedant, Ananya and Shaurya to explore the power of modern computer vision. It is built in Python using a Flask backend. The frontend is built with vanilla HTML, JavaScript, and Tailwind CSS.
+             </p>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-600 mt-20 border-t border-gray-800">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Vedant, Ananya and Shaurya. All rights reserved.</p>
+            <p class="mt-1">Built with Python, Flask, & Transformers</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for the Demo and Animations -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- Intro Animation ---
+            const heroContent = document.getElementById('hero-content');
+            const scrollIndicator = document.getElementById('scroll-indicator');
+            
+            // After the last letter flashes (2.3s + 0.5s animation = 2.8s)
+            setTimeout(() => {
+                heroContent.classList.add('fade-in');
+                scrollIndicator.classList.add('fade-in');
+            }, 2800); // Start fade-in after letter animation
+
+            // --- Demo Logic ---
+            const imageUpload = document.getElementById('image-upload');
+            const fileNameDisplay = document.getElementById('file-name');
+            const mainImage = document.getElementById('main-image');
+            const mainDepthMap = document.getElementById('main-depth-map');
+            const thinkingPrompt = document.getElementById('thinking-prompt');
+            const resultsDisplay = document.getElementById('results-display');
+            const errorMessage = document.getElementById('error-message');
+
+            imageUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    fileNameDisplay.textContent = file.name;
+                    uploadFile(file);
+                }
+            });
+
+            async function uploadFile(file) {
+                // Show loading, hide old results/errors
+                thinkingPrompt.classList.remove('hidden');
+                resultsDisplay.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const startTime = Date.now(); // Record start time
+                const minDisplayTime = 2000; // 2 seconds
+
+                try {
+                    // Send the image to the /predict route on the server
+                    const response = await fetch('/predict', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Server error. Please try again.');
+                    }
+
+                    const result = await response.json();
+
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    // --- DELAY LOGIC ---
+                    const elapsed = Date.now() - startTime;
+                    const remainingTime = minDisplayTime - elapsed;
+                    if (remainingTime > 0) {
+                        await new Promise(resolve => setTimeout(resolve, remainingTime));
+                    }
+                    // --- END DELAY LOGIC ---
+
+                    // Success! Update the images
+                    mainImage.src = result.original_path;
+                    mainDepthMap.src = result.depth_path;
+
+                    // Show results
+                    resultsDisplay.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    
+                    // --- DELAY LOGIC (for errors) ---
+                    const elapsed = Date.now() - startTime;
+                    const remainingTime = minDisplayTime - elapsed;
+                    if (remainingTime > 0) {
+                        await new Promise(resolve => setTimeout(resolve, remainingTime));
+                    }
+                    // --- END DELAY LOGIC ---
+                    
+                    errorMessage.textContent = 'Upload failed. Please try a different image.';
+                    errorMessage.classList.remove('hidden');
+                } finally {
+                    // Hide loading spinner
+                    thinkingPrompt.classList.add('hidden');
+                }
+            }
+            
+            // --- Scroll Animation Observer ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger when 10% of the element is visible
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+</body>
+</html>
+
