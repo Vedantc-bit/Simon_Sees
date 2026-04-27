@@ -56,3 +56,4 @@ Co-author activity logged at 2026-04-22 13:49:59 - Comment: Add helper utilities
 Co-author activity logged at 2026-04-22 21:25:57 - Comment: Fix key lookup error in nyu dataset generator (Part 4)
 Co-author activity logged at 2026-04-23 02:03:32 - Comment: Tune hyperparameters for depth estimation model (Part 5)
 Co-author activity logged at 2026-04-24 05:14:48 - Comment: Improve validation accuracy reporting logs (Part 6)
+Co-author activity logged at 2026-04-27 15:37:03 - Comment: Resolve relative path conflicts in dataset loading (Part 7)
