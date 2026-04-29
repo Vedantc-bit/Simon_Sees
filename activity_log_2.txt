@@ -62,3 +62,4 @@ Co-author activity logged at 2026-04-29 00:06:48 - Comment: Draft unit tests for
 Co-author activity logged at 2026-04-29 02:19:32 - Comment: Implement basic checks for input shape dimensions (Part 10)
 Co-author activity logged at 2026-04-29 09:21:55 - Comment: Clean caching folders and unused temporary images (Part 11)
 Co-author activity logged at 2026-04-29 22:10:01 - Comment: Style format codebase according to PEP 8 (Part 12)
+Co-author activity logged at 2026-04-29 22:49:51 - Comment: Create documentation for check_paths helper script (Part 13)
