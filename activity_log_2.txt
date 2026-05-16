@@ -79,3 +79,4 @@ Co-author activity logged at 2026-05-13 18:38:21 - Comment: Improve validation a
 Co-author activity logged at 2026-05-15 16:22:41 - Comment: Resolve relative path conflicts in dataset loading (Part 27)
 Co-author activity logged at 2026-05-16 16:51:53 - Comment: Update requirements and package locks (Part 28)
 Co-author activity logged at 2026-05-16 23:29:13 - Comment: Draft unit tests for pretrained inference module (Part 29)
+Co-author activity logged at 2026-05-17 00:13:52 - Comment: Implement basic checks for input shape dimensions (Part 30)
