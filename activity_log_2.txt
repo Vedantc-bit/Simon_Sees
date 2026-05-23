@@ -83,3 +83,4 @@ Co-author activity logged at 2026-05-17 00:13:52 - Comment: Implement basic chec
 Co-author activity logged at 2026-05-18 11:09:17 - Comment: Clean caching folders and unused temporary images (Part 31)
 Co-author activity logged at 2026-05-22 16:19:19 - Comment: Style format codebase according to PEP 8 (Part 32)
 Co-author activity logged at 2026-05-23 00:50:28 - Comment: Create documentation for check_paths helper script (Part 33)
+Co-author activity logged at 2026-05-23 09:28:29 - Comment: Revamp error messaging in API endpoints (Part 34)
